@@ -54,12 +54,12 @@ public class UserRestController {
     }
 
     @GetMapping(GET_BY_USERNAME)
-    public Optional<User> getByUsername(@PathVariable String username) {
+    public ResponseEntity<User> getByUsername(@PathVariable String username) {
         try {
-            return userRepository.findByUsername(username);
+            return  userRepository.findByUsername(username);
         } catch (Exception e) {
-            e.printStackTrace();
-            log.error(e.getMessage());
+            
+            log.warn("ERROR GET USER BY USERNAME {}",username, e);
             return Optional.empty();
         }
     }
@@ -76,7 +76,7 @@ public class UserRestController {
             Optional<User> userFiscalcode = userRepository.findByFiscalCode(user.getFiscalCode());
             if (username.isEmpty()) {
                 if (userFiscalcode.isEmpty()) {
-                    if (user.getUsername().isBlank() || user.getEmail().isBlank() || user.getFiscalCode().isBlank()) {
+                    if (StringUtils.isBlank(user.getUsername()) || user.getEmail().isBlank() || user.getFiscalCode().isBlank()) {
                         return new ResponseEntity<>(new JsonMessage("Username or email or fiscalcode are empty"),
                                 HttpStatus.BAD_REQUEST);
                     } else {
